@@ -82,7 +82,7 @@ MODELS = {
 class TUTAforCTC(nn.Module):
     def __init__(self, config):
         super(TUTAforCTC, self).__init__()
-        self.backbone = bbs.BBS[config.target](config)
+        self.backbone = bbs.BACKBONES[config.target](config)
         self.ctc_head = hds.CtcHead(config)
 
     def forward(self, 
@@ -100,7 +100,7 @@ class TUTAforCTC(nn.Module):
 class TUTAbaseforCTC(nn.Module):
     def __init__(self, config):
         super(TUTAbaseforCTC, self).__init__()
-        self.backbone = bbs.BBS[config.target](config)
+        self.backbone = bbs.BACKBONES[config.target](config)
         self.ctc_head = hds.CtcHead(config)
 
     def forward(self, 

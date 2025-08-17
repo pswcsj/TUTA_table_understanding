@@ -9,7 +9,7 @@ import os
 import json
 import random
 import argparse
-import json_lines
+import jsonlines
 import torch
 import torch.nn as nn
 
@@ -317,7 +317,7 @@ def build_flat_repo(flat_json_path):    # transfer deex.jl to list of sheet dict
     # Build tctc repository using json-lines
     flat_repo = []
     with open(flat_json_path, "rb") as fr_flat:
-        for item in json_lines.reader(fr_flat):
+        for item in jsonlines.Reader(fr_flat):
             flat_repo.append( item )
     print("collected {} source samples from: {}".format(len(flat_repo), flat_json_path))
     return flat_repo

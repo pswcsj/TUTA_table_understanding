@@ -174,11 +174,15 @@ class EmbeddingForTuta(nn.Module):
         batch_size, seq_len = order.size()
 
         row_states = self.row_weight(pos_row)       
-        left_tree_states = self.left_tree_weight(pos_left)   
+        # Clamp positions to avoid negative indices
+        pos_left_clamped = torch.clamp(pos_left, min=0)
+        left_tree_states = self.left_tree_weight(pos_left_clamped)   
         left_tree_states = left_tree_states.contiguous().view(batch_size, seq_len, -1) 
         # horizontal_states = torch.cat((row_states, left_tree_states), -1)
         column_states = self.column_weight(pos_col)   
-        top_tree_states = self.top_tree_weight(pos_top)  
+        # Clamp positions to avoid negative indices
+        pos_top_clamped = torch.clamp(pos_top, min=0)
+        top_tree_states = self.top_tree_weight(pos_top_clamped)  
         top_tree_states = top_tree_states.contiguous().view(batch_size, seq_len, -1)
         # vertital_states = torch.cat((column_states, top_tree_states), -1)
         position_states = order_states + torch.cat(
