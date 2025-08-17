@@ -105,6 +105,14 @@ def train_and_validate(args):
     else:
         init_tuta_loose(model=model, tuta_path=None)
 
+    for name, param in model.named_parameters():
+        if "embeddings" in name:
+            param.requires_grad = False
+        elif "encoder.layer" in name:
+            layer_num = int(name.split(".layer.")[1].split(".")[0])
+            if layer_num < 6:  # Layer 0-5 freeze
+                param.requires_grad = False
+
     if args.dist_train:  # multiple GPU mode
         mp.spawn(
             worker,
@@ -323,12 +331,14 @@ def main():
         "--clc_weight", type=float, default=1.0, help="Weight assigned to clc loss."
     )
     parser.add_argument(
-        "--aggregator", type=str, default="avg", choices=["sum", "avg"], 
-        help="Aggregation method from token to cell."
+        "--aggregator",
+        type=str,
+        default="avg",
+        choices=["sum", "avg"],
+        help="Aggregation method from token to cell.",
     )
     parser.add_argument(
-        "--cell_pooling", type=str, default="mean", 
-        help="Cell pooling method."
+        "--cell_pooling", type=str, default="mean", help="Cell pooling method."
     )
 
     # training options
@@ -439,7 +449,7 @@ def main():
 
     # convert '+'-connected dataset_paths into list of strings
     args.dataset_paths = args.dataset_paths.split("+")
-    
+
     # convert val_dataset_paths if provided
     if args.val_dataset_paths:
         args.val_dataset_paths = args.val_dataset_paths.split("+")
